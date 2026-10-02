@@ -3,7 +3,7 @@
 Use your keyboard as a virtual Xbox 360 controller. Games that support Xbox controllers see a real
 gamepad, while you play with the keys you choose.
 
-![Keyvert](docs/screenshot.png)
+![Keyvert turning key presses into stick, button and trigger input in the live view](docs/demo.gif)
 
 - **Live view:** a drawing of the controller that lights up as you press keys, with the exact stick and trigger values.
 - **Bindings editor:** click **+** next to a control and press a key. Bind several keys to one control, remove one with **×**.
