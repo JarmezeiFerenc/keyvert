@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Keyvert.Core;
 using Keyvert.ViewModels;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
@@ -98,6 +99,13 @@ public partial class MainWindow : FluentWindow
         menu.PlacementTarget = ProfileMenuButton;
         menu.DataContext = DataContext;
         menu.IsOpen = true;
+    }
+
+    private void PresetMenu_Click(object sender, RoutedEventArgs e)
+    {
+        // Clicks on the preset items bubble up here; the parent item itself only opens the submenu.
+        if (e.OriginalSource is FrameworkElement { DataContext: ProfilePreset preset })
+            _viewModel.AddPresetCommand.Execute(preset);
     }
 
     private void CaptureOverlay_MouseDown(object sender, MouseButtonEventArgs e)

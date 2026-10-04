@@ -12,6 +12,9 @@ public sealed class AppSettings
     public bool CloseToTray { get; set; } = true;
     public bool StartMinimized { get; set; }
     public string? LastProfile { get; set; }
+
+    /// <summary>Built-in layouts already added as profiles, so a deleted one isn't added again.</summary>
+    public List<string>? AddedPresets { get; set; }
 }
 
 public sealed class SettingsStore(string filePath, AppLog log)

@@ -33,47 +33,12 @@ public sealed class ConfigException(IReadOnlyList<string> errors)
 
 public static class ProfileSerializer
 {
-    public const string DefaultJson = """
-        {
-          "walkScale": 0.5,
-          "bindings": {
-            "W": "LeftStickUp",
-            "A": "LeftStickLeft",
-            "S": "LeftStickDown",
-            "D": "LeftStickRight",
-
-            "Space": "A",
-            "2": "B",
-            "O": "X",
-            "1": "Y",
-
-            "R": "LB",
-            "3": "RB",
-            "E": "LT",
-            "P": "RT",
-
-            "Q": "LS",
-            "G": "RS",
-
-            "I": "DpadUp",
-            "F": "DpadDown",
-            "X": "DpadLeft",
-            "J": "DpadRight",
-
-            "K": "Start",
-            "M": "Back"
-          }
-        }
-        """;
-
     private static readonly JsonSerializerOptions ReadOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         ReadCommentHandling = JsonCommentHandling.Skip,
         AllowTrailingCommas = true,
     };
-
-    public static ProfileData CreateDefault() => Parse(DefaultJson);
 
     /// <summary>Unknown properties are ignored, so old single-file configs import as profiles.</summary>
     public static ProfileData Parse(string json)

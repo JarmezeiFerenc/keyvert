@@ -85,6 +85,7 @@ public sealed partial class MainViewModel : ObservableObject
     public ObservableCollection<string> Profiles { get; } = [];
     public string? CurrentProfile { get; private set; }
     public string ToggleKeyLabel => KeyNames.Display(_toggleKey);
+    public IReadOnlyList<ProfilePreset> Presets => ProfilePresets.All;
     public string ProfilesFolder => _profiles.Directory;
     public string Version => Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "";
 
@@ -324,8 +325,16 @@ public sealed partial class MainViewModel : ObservableObject
         if (name is null)
             return;
 
-        if (TrySaveProfile(name, ProfileSerializer.CreateDefault()))
+        if (TrySaveProfile(name, ProfilePresets.Default.Create()))
             SwitchTo(name, $"Created profile {name}.");
+    }
+
+    [RelayCommand]
+    private void AddPreset(ProfilePreset preset)
+    {
+        string name = _profiles.UniqueName(preset.Name);
+        if (TrySaveProfile(name, preset.Create()))
+            SwitchTo(name, $"Added the {preset.Name} layout as {name}.");
     }
 
     [RelayCommand]
@@ -404,15 +413,17 @@ public sealed partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task ResetProfileAsync()
     {
+        var preset = ProfilePresets.ForProfile(CurrentProfile!) ?? ProfilePresets.Default;
+        string layout = preset == ProfilePresets.Default ? "the default layout" : $"the {preset.Name} layout";
         string? confirmed = await ShowPromptAsync($"Reset {CurrentProfile}?",
-            "Replaces every binding in this profile with the default layout.", null, "Reset", danger: true);
+            $"Replaces every binding in this profile with {layout}.", null, "Reset", danger: true);
         if (confirmed is null)
             return;
 
-        _profile = ProfileSerializer.CreateDefault();
+        _profile = preset.Create();
         CommitProfileChange();
         Sync(() => WalkPercent = Math.Round(_profile.WalkScale * 100));
-        ShowToast("Restored the default layout.");
+        ShowToast($"Restored {layout}.");
     }
 
     [RelayCommand]
@@ -487,14 +498,36 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void LoadInitialProfile()
     {
+        AddNewPresets();
         RefreshProfileList();
-        if (Profiles.Count == 0)
-            TrySaveProfile("Default", ProfileSerializer.CreateDefault());
-
-        RefreshProfileList();
-        string? last = Profiles.FirstOrDefault(p => string.Equals(p, _settings.LastProfile, StringComparison.OrdinalIgnoreCase));
+        string lastName = _settings.LastProfile ?? ProfilePresets.Default.Name;
+        string? last = Profiles.FirstOrDefault(p => string.Equals(p, lastName, StringComparison.OrdinalIgnoreCase));
         if (last is null || !TryLoadProfile(last, out _))
             LoadFirstWorkingProfile();
+    }
+
+    /// <summary>
+    /// Adds a profile for each built-in layout this install hasn't added yet: all of them on first run,
+    /// and the new ones after an update. A layout the user deleted isn't added again.
+    /// </summary>
+    private void AddNewPresets()
+    {
+        var added = _settings.AddedPresets ??= [];
+        bool changed = false;
+        foreach (var preset in ProfilePresets.All)
+        {
+            if (added.Contains(preset.Name, StringComparer.OrdinalIgnoreCase))
+                continue;
+
+            if (_profiles.Exists(preset.Name) || TrySaveProfile(preset.Name, preset.Create()))
+            {
+                added.Add(preset.Name);
+                changed = true;
+            }
+        }
+
+        if (changed)
+            _settingsStore.Save(_settings);
     }
 
     private void LoadFirstWorkingProfile()
@@ -508,7 +541,7 @@ public sealed partial class MainViewModel : ObservableObject
 
         // Every profile file is broken; start a fresh one rather than running without bindings.
         string fresh = _profiles.UniqueName("Default");
-        if (TrySaveProfile(fresh, ProfileSerializer.CreateDefault()))
+        if (TrySaveProfile(fresh, ProfilePresets.Default.Create()))
             SwitchTo(fresh, null);
     }
 

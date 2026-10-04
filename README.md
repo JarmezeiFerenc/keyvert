@@ -7,7 +7,8 @@ gamepad, while you play with the keys you choose.
 
 - **Live view:** a drawing of the controller that lights up as you press keys, with the exact stick and trigger values.
 - **Bindings editor:** click **+** next to a control and press a key. Bind several keys to one control, remove one with **×**.
-- **Profiles:** one per game. Create, duplicate, rename, delete, import and export them.
+- **Profiles:** one per game, with ready-made layouts for action, platformer, racing and twin-stick games.
+  Create, duplicate, rename, delete, import and export them.
 - **On/off hotkey:** **F12** by default. It works anywhere, even inside a game.
 - **Tray icon:** keeps running in the notification area, where you can switch emulation and profiles.
 - **Follows Windows:** light or dark theme, Windows 11 look.
@@ -26,7 +27,7 @@ Choose **More info → Run anyway**.
 
 ## Using it
 
-1. Pick a profile, or keep **Default**.
+1. Pick a profile: **Default**, or one of the game layouts below.
 2. Turn emulation on with the switch or **F12**. You hear a high beep when it turns on, a low one when it turns off.
 3. Start your game. It sees an Xbox 360 controller. Press F12 again to get your keyboard back.
 
@@ -38,17 +39,37 @@ quit. Settings can change both behaviors.
 
 ### Default layout
 
+Made to work in most games without a mouse. The left hand moves and uses the usual PC keys, the right
+hand turns the camera with the triggers above it, and the arrow keys drive the D-pad, so menus work too.
+
 | Keys | Controller |
 | --- | --- |
 | W A S D | Left stick |
-| Space / 2 / O / 1 | A / B / X / Y |
-| R / 3 | LB / RB |
-| E / P | LT / RT |
-| Q / G | Left / right stick click |
-| I / F / X / J | D-pad up / down / left / right |
-| K / M | Start / Back |
+| I J K L | Right stick (camera) |
+| Left Shift / H | Left / right stick click |
+| Space or Enter | A |
+| Left Ctrl or Backspace | B |
+| E / R | X / Y |
+| Q / F | LB / RB |
+| U / O | LT / RT |
+| Arrow keys | D-pad |
+| Esc / Tab | Start / Back |
 
-The right stick, Walk and the Guide button start unbound.
+Walk and the Guide button start unbound.
+
+### Game layouts
+
+On first start, Keyvert creates a profile for each built-in layout. You can add one again any time with
+**Manage → Add a game layout**, and **Manage → Reset layout** restores a profile to the layout it came from.
+
+| Layout | For | Main keys |
+| --- | --- | --- |
+| Default | Most games | See above |
+| Action (Souls-like) | Third-person action games | WASD move, IJKL camera, Space dodge, E interact, Q lock-on, U O Y P bumpers and triggers, hold Ctrl to walk |
+| Platformer | 2D platformers | Arrow keys move, Z jump, X attack, C dash, A S D F bumpers and triggers |
+| Racing | Driving games | W throttle, S brake, A D steer, Space handbrake, hold Shift to steer gently, arrow keys for menus |
+| Twin-stick shooter | Top-down shooters | WASD move, arrow keys aim, Space fire, Shift left trigger, 1–4 D-pad |
+| Minecraft Dungeons | Minecraft Dungeons | WASD move, Space / 2 / O / 1 for A / B / X / Y |
 
 ### Settings
 

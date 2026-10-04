@@ -259,13 +259,25 @@
                         <ui:Button.ContextMenu>
                             <ContextMenu Placement="Bottom">
                                 <MenuItem Command="{Binding NewProfileCommand}" Header="New profile" Icon="{ui:SymbolIcon DocumentAdd24}" />
+                                <MenuItem
+                                    Click="PresetMenu_Click"
+                                    Header="Add a game layout"
+                                    Icon="{ui:SymbolIcon Games24}"
+                                    ItemsSource="{Binding Presets}">
+                                    <MenuItem.ItemContainerStyle>
+                                        <Style BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="MenuItem">
+                                            <Setter Property="Header" Value="{Binding Name}" />
+                                            <Setter Property="ToolTip" Value="{Binding Description}" />
+                                        </Style>
+                                    </MenuItem.ItemContainerStyle>
+                                </MenuItem>
                                 <MenuItem Command="{Binding DuplicateProfileCommand}" Header="Duplicate" Icon="{ui:SymbolIcon Copy24}" />
                                 <MenuItem Command="{Binding RenameProfileCommand}" Header="Rename" Icon="{ui:SymbolIcon Rename24}" />
-                                <MenuItem Command="{Binding ResetProfileCommand}" Header="Reset to default layout" Icon="{ui:SymbolIcon ArrowSync24}" />
+                                <MenuItem Command="{Binding ResetProfileCommand}" Header="Reset layout" Icon="{ui:SymbolIcon ArrowSync24}" />
                                 <MenuItem Command="{Binding DeleteProfileCommand}" Header="Delete" Icon="{ui:SymbolIcon Delete24}" />
                                 <Separator />
                                 <MenuItem Command="{Binding ImportProfileCommand}" Header="Import…" Icon="{ui:SymbolIcon ArrowImport24}" />
-                                <MenuItem Command="{Binding ExportProfileCommand}" Header="Export…" Icon="{ui:SymbolIcon ArrowExport24}" />
+                                <MenuItem Command="{Binding ExportProfileCommand}" Header="Export…" Icon="{ui:SymbolIcon ArrowExportLtr24}" />
                                 <MenuItem Command="{Binding OpenProfilesFolderCommand}" Header="Open profiles folder" Icon="{ui:SymbolIcon FolderOpen24}" />
                             </ContextMenu>
                         </ui:Button.ContextMenu>
