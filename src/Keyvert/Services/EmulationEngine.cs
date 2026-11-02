@@ -34,6 +34,10 @@ public sealed class EmulationEngine : IDisposable
     private bool _toggleBlockedHeld;
     private bool _connecting;
     private bool _disposed;
+    private readonly Timer _smoothTimer;
+    private ControllerState _targetState;
+    private ControllerState _currentState;
+    private const int UpdateIntervalMs = 15;
 
     public EmulationEngine(MappingProfile profile, AppLog log)
     {
@@ -41,6 +45,9 @@ public sealed class EmulationEngine : IDisposable
         _router = new InputRouter(profile);
         _router.SetEnabled(false);
         _log = log;
+
+        // Start Tick Loop for Smoothing
+        _smoothTimer = new Timer(OnSmoothTick, null, 0, UpdateIntervalMs);
     }
 
     public event Action<ControllerSnapshot>? StateChanged;
@@ -208,6 +215,7 @@ public sealed class EmulationEngine : IDisposable
             _controller = null;
         }
 
+        _smoothTimer?.Dispose();
         _hook?.Dispose();
         controller?.Dispose();
         _log.Info("Emulation engine stopped, controller released.");
@@ -268,8 +276,9 @@ public sealed class EmulationEngine : IDisposable
     /// <summary>Sends the router's state to the controller. Call inside the lock.</summary>
     private ControllerSnapshot Publish()
     {
-        var snapshot = new ControllerSnapshot(_router.BuildState(), _router.ActiveActions());
-        _controller?.Update(snapshot.State);
+        _targetState = _router.BuildState();
+
+        var snapshot = new ControllerSnapshot(_targetState, _router.ActiveActions());
         return snapshot;
     }
 
@@ -298,4 +307,166 @@ public sealed class EmulationEngine : IDisposable
         DriverError = error;
         DriverStatusChanged?.Invoke();
     }
+
+    private void OnSmoothTick(object? state)
+    {
+        lock (_gate)
+        {
+            if (_controller is null || !_router.Enabled)
+                return;
+
+            float smoothMs = (float)_profile.SmoothTime * 100f;
+
+            // Calculate lerp factor based on target duration
+            float lerpFactor;
+            if (smoothMs <= 0f)
+            {
+                lerpFactor = 1.0f; // Instant snap
+            }
+            else
+            {
+                lerpFactor = Math.Clamp(UpdateIntervalMs / smoothMs, 0.02f, 1.0f);
+            }
+
+            float thumbStickLerp = (_profile.SmoothInput == 1 || _profile.SmoothInput == 3) ? lerpFactor : 1f;
+            float triggerLerp = (_profile.SmoothInput == 2 || _profile.SmoothInput == 3) ? lerpFactor : 1f;
+
+            // Smooth sticks with easing
+            var left = LerpJoystick(_currentState.LeftX, _currentState.LeftY, _targetState.LeftX, _targetState.LeftY, thumbStickLerp);
+            _currentState.LeftX = left.X;
+            _currentState.LeftY = left.Y;
+
+            var right = LerpJoystick(_currentState.RightX, _currentState.RightY, _targetState.RightX, _targetState.RightY, thumbStickLerp);
+            _currentState.RightX = right.X;
+            _currentState.RightY = right.Y;
+
+            // Smooth triggers with easing
+            _currentState.LeftTrigger = LerpTrigger(_currentState.LeftTrigger, _targetState.LeftTrigger, triggerLerp);
+            _currentState.RightTrigger = LerpTrigger(_currentState.RightTrigger, _targetState.RightTrigger, triggerLerp);
+
+            // Buttons are digital, so they snap immediately
+            _currentState.Buttons = _targetState.Buttons;
+
+            _controller.Update(_currentState);
+            StateChanged?.Invoke(new ControllerSnapshot(_currentState, _router.ActiveActions()));
+        }
+    }
+
+    private static (short X, short Y) LerpJoystick(short currentX, short currentY, short targetX, short targetY, float baseFactor)
+    {
+        if (currentX == targetX && currentY == targetY) return (targetX, targetY);
+        if (baseFactor >= 1.0f) return (targetX, targetY);
+
+        int diffX = targetX - currentX;
+        int diffY = targetY - currentY;
+        double distance = Math.Sqrt((double)diffX * diffX + (double)diffY * diffY);
+
+        if (distance <= 2.0)
+            return (targetX, targetY);
+
+        bool isReleasing = (targetX == 0 && targetY == 0);
+
+        // Clean release deadzone near center (prevents asymptotic slow creep)
+        if (isReleasing && distance < 400.0)
+            return (0, 0);
+
+        // Jump Halfway when first pressing for responsive feel
+        bool isStartingPress = (currentX == 0 && currentY == 0 && !isReleasing);
+        if (isStartingPress)
+        {
+            return ((short)(targetX / 2), (short)(targetY / 2));
+        }
+
+        // Detect Flicks
+        bool isReversingX = (currentX > 0 && targetX < 0) || (currentX < 0 && targetX > 0);
+        bool isReversingY = (currentY > 0 && targetY < 0) || (currentY < 0 && targetY > 0);
+        bool isDirectionFlip = isReversingX || isReversingY;
+
+        float easedFactor;
+
+        if (isReleasing)
+        {
+            // Realistic spring release mimicking thumbstick spring letting go
+            float progress = Math.Clamp((float)(distance / 32768.0), 0f, 1f);
+            easedFactor = baseFactor * (1.5f + (2.5f * progress));
+        }
+        else if (isDirectionFlip)
+        {
+            // Flick
+            easedFactor = Math.Max(baseFactor * 2.5f, 0.6f);
+        }
+        else
+        {
+            // Normal Movement
+            double currentMagnitude = Math.Sqrt((double)currentX * currentX + (double)currentY * currentY);
+            float travelFromCenter = Math.Clamp((float)(currentMagnitude / 32768.0), 0f, 1f);
+            easedFactor = baseFactor * (0.5f + (0.5f * travelFromCenter));
+        }
+
+        easedFactor = Math.Clamp(easedFactor, 0.05f, 1.0f);
+
+        // Calculate step magnitude
+        double stepMagnitude = distance * easedFactor;
+        if (stepMagnitude < 1.0) stepMagnitude = 1.0;
+
+        if (stepMagnitude >= distance)
+            return (targetX, targetY);
+
+        // Move X and Y proportionally
+        double ratio = stepMagnitude / distance;
+        short newX = (short)(currentX + (int)(diffX * ratio));
+        short newY = (short)(currentY + (int)(diffY * ratio));
+
+        return (newX, newY);
+    }
+
+    private static byte LerpTrigger(byte current, byte target, float baseFactor)
+    {
+        if (current == target) return target;
+        if (baseFactor >= 1.0f) return target;
+
+        int diff = target - current;
+        int absDiff = Math.Abs(diff);
+
+        bool isReleasing = (target == 0);
+
+        // Trigger snap to zero near the bottom of travel
+        if (isReleasing && absDiff < 12)
+            return 0;
+
+        // Jump Halfway when first pressing for responsive feel
+        bool isStartingPress = (current == 0 && !isReleasing);
+        if (isStartingPress)
+        {
+            return (byte)(target / 2);
+        }
+
+        if (absDiff <= 1)
+            return target;
+
+        float easedFactor;
+
+        if (isReleasing)
+        {
+            // Realistic spring release mimicking thumbstick spring letting go
+            float progress = Math.Clamp((float)absDiff / 255f, 0f, 1f);
+            easedFactor = baseFactor * (1.2f + (1.5f * progress));
+        }
+        else
+        {
+            // Smooth Movement
+            float travelFromZero = Math.Clamp((float)current / 255f, 0f, 1f);
+            easedFactor = baseFactor * (0.3f + (0.7f * travelFromZero));
+        }
+
+        easedFactor = Math.Clamp(easedFactor, 0.05f, 1.0f);
+
+        int step = (int)(diff * easedFactor);
+        if (step == 0) step = Math.Sign(diff);
+
+        if (Math.Abs(step) > absDiff) return target;
+
+        return (byte)(current + step);
+    }
+
 }

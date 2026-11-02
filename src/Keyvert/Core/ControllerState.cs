@@ -22,7 +22,7 @@ public enum PadButtons : ushort
     Y = 0x8000,
 }
 
-public readonly record struct ControllerState(
+public record struct ControllerState(
     PadButtons Buttons,
     short LeftX,
     short LeftY,

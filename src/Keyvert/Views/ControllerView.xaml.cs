@@ -25,6 +25,9 @@ public partial class ControllerView : UserControl
     private static readonly FaceStyle XStyle = new(Color.FromRgb(0x3D, 0x8B, 0xF2));
     private static readonly FaceStyle YStyle = new(Color.FromRgb(0xE3, 0xA9, 0x2B));
 
+    private short _lastLeftX, _lastLeftY, _lastRightX, _lastRightY;
+    private byte _lastLt, _lastRt;
+
     public static readonly DependencyProperty SnapshotProperty = DependencyProperty.Register(
         nameof(Snapshot), typeof(ControllerSnapshot), typeof(ControllerView),
         new PropertyMetadata(default(ControllerSnapshot), (d, _) => ((ControllerView)d).Refresh()));
@@ -68,13 +71,27 @@ public partial class ControllerView : UserControl
         SetPart(StartShape, null, Pressed(PadButtons.Start), Lit(ControllerAction.Start));
         SetPart(GuideShape, null, Pressed(PadButtons.Guide), Lit(ControllerAction.Guide));
 
-        SetTrigger(LtBack, LtFill, LtLabel, state.LeftTrigger, Lit(ControllerAction.LT));
-        SetTrigger(RtBack, RtFill, RtLabel, state.RightTrigger, Lit(ControllerAction.RT));
+        SetTrigger(LtBack, LtFill, LtLabel, state.LeftTrigger, Snapshot.IsActive(ControllerAction.LT), Lit(ControllerAction.LT));
+        SetTrigger(RtBack, RtFill, RtLabel, state.RightTrigger, Snapshot.IsActive(ControllerAction.RT), Lit(ControllerAction.RT));
 
-        SetStick(LeftRing, LeftThumb, LeftThumbOffset, state.LeftX, state.LeftY, Pressed(PadButtons.LS),
-            Lit(ControllerAction.LeftStickUp, ControllerAction.LeftStickDown, ControllerAction.LeftStickLeft,
-                ControllerAction.LeftStickRight, ControllerAction.LS, ControllerAction.Walk));
-        SetStick(RightRing, RightThumb, RightThumbOffset, state.RightX, state.RightY, Pressed(PadButtons.RS),
+        // Check if user is physically holding down any Left Stick directional action
+        bool leftHeld = Snapshot.IsActive(ControllerAction.LeftStickUp) ||
+                        Snapshot.IsActive(ControllerAction.LeftStickDown) ||
+                        Snapshot.IsActive(ControllerAction.LeftStickLeft) ||
+                        Snapshot.IsActive(ControllerAction.LeftStickRight) ||
+                        Snapshot.IsActive(ControllerAction.Walk);
+
+        // Check if user is physically holding down any Right Stick directional action
+        bool rightHeld = Snapshot.IsActive(ControllerAction.RightStickUp) ||
+                         Snapshot.IsActive(ControllerAction.RightStickDown) ||
+                         Snapshot.IsActive(ControllerAction.RightStickLeft) ||
+                         Snapshot.IsActive(ControllerAction.RightStickRight);
+
+        SetStick(LeftRing, LeftThumb, LeftThumbOffset, state.LeftX, state.LeftY, Pressed(PadButtons.LS), leftHeld,
+        Lit(ControllerAction.LeftStickUp, ControllerAction.LeftStickDown, ControllerAction.LeftStickLeft,
+            ControllerAction.LeftStickRight, ControllerAction.LS, ControllerAction.Walk));
+
+        SetStick(RightRing, RightThumb, RightThumbOffset, state.RightX, state.RightY, Pressed(PadButtons.RS), rightHeld,
             Lit(ControllerAction.RightStickUp, ControllerAction.RightStickDown, ControllerAction.RightStickLeft,
                 ControllerAction.RightStickRight, ControllerAction.RS));
 
@@ -91,6 +108,8 @@ public partial class ControllerView : UserControl
         RtText.Text = $"{Math.Round(state.RightTrigger * 100 / 255.0)}%";
     }
 
+
+
     private static void SetPart(Shape shape, TextBlock? label, bool pressed, bool highlighted)
     {
         shape.SetResourceReference(Shape.FillProperty, pressed ? PressedFill : IdleFill);
@@ -104,20 +123,20 @@ public partial class ControllerView : UserControl
         shape.StrokeThickness = highlighted ? 2.5 : 1;
     }
 
-    private static void SetTrigger(Shape back, FrameworkElement fill, TextBlock label, byte value, bool highlighted)
+    private static void SetTrigger(Shape back, FrameworkElement fill, TextBlock label, byte value, bool isHeld, bool highlighted)
     {
         SetOutline(back, highlighted);
         fill.Width = value / 255.0 * TriggerWidth;
+        fill.SetResourceReference(Shape.FillProperty, isHeld ? PressedFill : IdleFill);
         label.SetResourceReference(TextBlock.ForegroundProperty, value > 127 ? PressedLabel : IdleLabel);
     }
 
-    private static void SetStick(Shape ring, Shape thumb, TranslateTransform offset, short x, short y, bool clicked, bool highlighted)
+    private static void SetStick(Shape ring, Shape thumb, TranslateTransform offset, short x, short y, bool clicked, bool isHeld, bool highlighted)
     {
         offset.X = x / (double)short.MaxValue * StickTravel;
         offset.Y = -y / (double)short.MaxValue * StickTravel;
 
-        bool moved = x != 0 || y != 0;
-        thumb.SetResourceReference(Shape.FillProperty, moved || clicked ? PressedFill : IdleFill);
+        thumb.SetResourceReference(Shape.FillProperty, isHeld || clicked ? PressedFill : IdleFill);
         ring.SetResourceReference(Shape.FillProperty, clicked ? PressedFill : IdleFill);
         ring.Opacity = clicked ? 0.45 : 1;
         SetOutline(ring, highlighted);

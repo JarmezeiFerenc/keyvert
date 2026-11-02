@@ -32,6 +32,7 @@ public sealed partial class MainViewModel : ObservableObject
     private bool _capturingToggleKey;
     private TaskCompletionSource<string?>? _prompt;
     private Func<string, string?>? _promptValidator;
+    private bool _isDispatchScheduled;
 
     public MainViewModel(EmulationEngine engine, ProfileStore profiles, SettingsStore settingsStore, AppSettings settings, AppLog log)
     {
@@ -180,6 +181,13 @@ public sealed partial class MainViewModel : ObservableObject
     public partial bool IsToastVisible { get; set; }
 
     public bool IsAnyOverlayOpen => IsCapturing || IsPromptOpen;
+
+    [ObservableProperty]
+    public partial float SmoothTime { get; set; }
+
+    [ObservableProperty]
+    public partial int SmoothInput { get; set; }
+
 
     public async Task ConnectAsync()
     {
@@ -422,7 +430,12 @@ public sealed partial class MainViewModel : ObservableObject
 
         _profile = preset.Create();
         CommitProfileChange();
-        Sync(() => WalkPercent = Math.Round(_profile.WalkScale * 100));
+        Sync(() => {
+            WalkPercent = Math.Round(_profile.WalkScale * 100);
+            SmoothTime = _profile.SmoothTime;
+            SmoothInput = _profile.SmoothInput;
+       });
+
         ShowToast($"Restored {layout}.");
     }
 
@@ -564,6 +577,8 @@ public sealed partial class MainViewModel : ObservableObject
         {
             SelectedProfile = name;
             WalkPercent = Math.Round(_profile.WalkScale * 100);
+            SmoothTime = _profile.SmoothTime;
+            SmoothInput = _profile.SmoothInput;
         });
         RefreshRows();
         ApplyToEngine();
@@ -643,6 +658,8 @@ public sealed partial class MainViewModel : ObservableObject
             ToggleKey = _toggleKey,
             SuppressMappedKeys = _settings.SuppressMappedKeys,
             WalkScale = _profile.WalkScale,
+            SmoothTime = _profile.SmoothTime,
+            SmoothInput = _profile.SmoothInput,
             Bindings = bindings,
         });
     }
@@ -676,6 +693,24 @@ public sealed partial class MainViewModel : ObservableObject
             return;
 
         _profile.WalkScale = Math.Clamp(value / 100.0, ProfileData.MinWalkScale, ProfileData.MaxWalkScale);
+        CommitProfileChange();
+    }
+
+    partial void OnSmoothTimeChanged(float value)
+    {
+        if (_syncing)
+            return;
+
+        _profile.SmoothTime = value;
+        CommitProfileChange();
+    }
+
+    partial void OnSmoothInputChanged(int value)
+    {
+        if (_syncing)
+            return;
+
+        _profile.SmoothInput = value;
         CommitProfileChange();
     }
 
@@ -759,28 +794,40 @@ public sealed partial class MainViewModel : ObservableObject
     {
         lock (_snapshotLock)
         {
+            // Always overwrite with the freshest engine state
             _latestSnapshot = snapshot;
-            if (_snapshotQueued)
-                return;
-            _snapshotQueued = true;
+
+            // Set true if UI update not in the dispatcher
+            if (!_isDispatchScheduled)
+                _isDispatchScheduled = true;
         }
 
-        // Coalesce bursts of key events into one UI update per rendered frame.
-        _dispatcher.BeginInvoke(DispatcherPriority.Render, ApplySnapshot);
+        // Dispatch exactly once per render cycle
+        _dispatcher.BeginInvoke(DispatcherPriority.Render, new Action(ApplySnapshot));
     }
 
     private void ApplySnapshot()
     {
         ControllerSnapshot snapshot;
+
         lock (_snapshotLock)
         {
+            // Grab the absolute latest snapshot and immediately reset the flag
             snapshot = _latestSnapshot;
-            _snapshotQueued = false;
+            _isDispatchScheduled = false;
         }
 
+        // Apply directly to UI properties (guaranteed to be the newest frame)
         Snapshot = snapshot;
+
         foreach (var row in _rows.Values)
-            row.IsActive = snapshot.IsActive(row.Action);
+        {
+            bool shouldBeActive = snapshot.IsActive(row.Action);
+            if (row.IsActive != shouldBeActive)
+            {
+                row.IsActive = shouldBeActive;
+            }
+        }
     }
 
     // ---- Prompt and toast ----

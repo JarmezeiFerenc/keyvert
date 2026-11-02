@@ -24,6 +24,7 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
         <views:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility" />
         <views:NullToCollapsedConverter x:Key="NullToCollapsed" />
+        <views:MultiplyConverter x:Key="Multiply" />
 
         <Style x:Key="Card" TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
@@ -47,7 +48,10 @@
             <Setter Property="FontSize" Value="14" />
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         </Style>
-        <Style x:Key="SettingCard" BasedOn="{StaticResource {x:Type ui:CardControl}}" TargetType="ui:CardControl">
+        <Style
+            x:Key="SettingCard"
+            BasedOn="{StaticResource {x:Type ui:CardControl}}"
+            TargetType="ui:CardControl">
             <Setter Property="Margin" Value="0,0,0,4" />
             <Setter Property="Padding" Value="16,12" />
         </Style>
@@ -143,7 +147,10 @@
                             </Grid.ColumnDefinitions>
                             <StackPanel Margin="0,0,16,0">
                                 <StackPanel Orientation="Horizontal">
-                                    <Ellipse Width="10" Height="10" VerticalAlignment="Center">
+                                    <Ellipse
+                                        Width="10"
+                                        Height="10"
+                                        VerticalAlignment="Center">
                                         <Ellipse.Style>
                                             <Style TargetType="Ellipse">
                                                 <Setter Property="Fill" Value="{DynamicResource TextFillColorTertiaryBrush}" />
@@ -162,7 +169,10 @@
                                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                         Text="{Binding StatusTitle}" />
                                 </StackPanel>
-                                <TextBlock Margin="0,6,0,0" Style="{StaticResource Caption}" Text="{Binding StatusDetail}" />
+                                <TextBlock
+                                    Margin="0,6,0,0"
+                                    Style="{StaticResource Caption}"
+                                    Text="{Binding StatusDetail}" />
                             </StackPanel>
                             <ui:ToggleSwitch
                                 Grid.Column="1"
@@ -172,7 +182,10 @@
                                 IsEnabled="{Binding IsDriverReady}" />
                         </Grid>
 
-                        <Rectangle Height="1" Margin="0,18,0,14" Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                        <Rectangle
+                            Height="1"
+                            Margin="0,18,0,14"
+                            Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
 
                         <StackPanel Orientation="Horizontal">
                             <ui:SymbolIcon FontSize="16">
@@ -193,16 +206,40 @@
                                     </Style>
                                 </ui:SymbolIcon.Style>
                             </ui:SymbolIcon>
-                            <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Text="{Binding DriverText}" />
+                            <TextBlock
+                                Margin="10,0,0,0"
+                                VerticalAlignment="Center"
+                                FontSize="13"
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                Text="{Binding DriverText}" />
                         </StackPanel>
                         <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
-                            <ui:SymbolIcon FontSize="16" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Symbol="XboxController24" />
-                            <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Text="{Binding ControllerText}" />
+                            <ui:SymbolIcon
+                                FontSize="16"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Symbol="XboxController24" />
+                            <TextBlock
+                                Margin="10,0,0,0"
+                                VerticalAlignment="Center"
+                                FontSize="13"
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                Text="{Binding ControllerText}" />
                         </StackPanel>
 
-                        <StackPanel Margin="0,16,0,0" Orientation="Horizontal" Visibility="{Binding IsDriverProblem, Converter={StaticResource BoolToVisibility}}">
-                            <ui:Button Appearance="Primary" Command="{Binding OpenDriverPageCommand}" Content="Download driver" Icon="{ui:SymbolIcon ArrowDownload24}" />
-                            <ui:Button Margin="8,0,0,0" Command="{Binding RetryDriverCommand}" Content="Try again" Icon="{ui:SymbolIcon ArrowSync24}" />
+                        <StackPanel
+                            Margin="0,16,0,0"
+                            Orientation="Horizontal"
+                            Visibility="{Binding IsDriverProblem, Converter={StaticResource BoolToVisibility}}">
+                            <ui:Button
+                                Appearance="Primary"
+                                Command="{Binding OpenDriverPageCommand}"
+                                Content="Download driver"
+                                Icon="{ui:SymbolIcon ArrowDownload24}" />
+                            <ui:Button
+                                Margin="8,0,0,0"
+                                Command="{Binding RetryDriverCommand}"
+                                Content="Try again"
+                                Icon="{ui:SymbolIcon ArrowSync24}" />
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -214,8 +251,16 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <DockPanel>
-                            <TextBlock FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Text="Live view" />
-                            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource Caption}" Text="{Binding LiveViewHint}" />
+                            <TextBlock
+                                FontSize="14"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                Text="Live view" />
+                            <TextBlock
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource Caption}"
+                                Text="{Binding LiveViewHint}" />
                         </DockPanel>
                         <views:ControllerView
                             Grid.Row="1"
@@ -239,15 +284,19 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock VerticalAlignment="Center" FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="Profile" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="14"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="Profile" />
                     <ComboBox
                         Grid.Column="1"
+                        MinWidth="240"
                         MaxWidth="320"
                         Margin="12,0,8,0"
                         HorizontalAlignment="Left"
                         AutomationProperties.Name="Profile"
                         ItemsSource="{Binding Profiles}"
-                        MinWidth="240"
                         SelectedItem="{Binding SelectedProfile}" />
                     <ui:Button
                         x:Name="ProfileMenuButton"
@@ -258,7 +307,10 @@
                         ToolTip="Profile actions">
                         <ui:Button.ContextMenu>
                             <ContextMenu Placement="Bottom">
-                                <MenuItem Command="{Binding NewProfileCommand}" Header="New profile" Icon="{ui:SymbolIcon DocumentAdd24}" />
+                                <MenuItem
+                                    Command="{Binding NewProfileCommand}"
+                                    Header="New profile"
+                                    Icon="{ui:SymbolIcon DocumentAdd24}" />
                                 <MenuItem
                                     Click="PresetMenu_Click"
                                     Header="Add a game layout"
@@ -271,14 +323,35 @@
                                         </Style>
                                     </MenuItem.ItemContainerStyle>
                                 </MenuItem>
-                                <MenuItem Command="{Binding DuplicateProfileCommand}" Header="Duplicate" Icon="{ui:SymbolIcon Copy24}" />
-                                <MenuItem Command="{Binding RenameProfileCommand}" Header="Rename" Icon="{ui:SymbolIcon Rename24}" />
-                                <MenuItem Command="{Binding ResetProfileCommand}" Header="Reset layout" Icon="{ui:SymbolIcon ArrowSync24}" />
-                                <MenuItem Command="{Binding DeleteProfileCommand}" Header="Delete" Icon="{ui:SymbolIcon Delete24}" />
+                                <MenuItem
+                                    Command="{Binding DuplicateProfileCommand}"
+                                    Header="Duplicate"
+                                    Icon="{ui:SymbolIcon Copy24}" />
+                                <MenuItem
+                                    Command="{Binding RenameProfileCommand}"
+                                    Header="Rename"
+                                    Icon="{ui:SymbolIcon Rename24}" />
+                                <MenuItem
+                                    Command="{Binding ResetProfileCommand}"
+                                    Header="Reset layout"
+                                    Icon="{ui:SymbolIcon ArrowSync24}" />
+                                <MenuItem
+                                    Command="{Binding DeleteProfileCommand}"
+                                    Header="Delete"
+                                    Icon="{ui:SymbolIcon Delete24}" />
                                 <Separator />
-                                <MenuItem Command="{Binding ImportProfileCommand}" Header="Import…" Icon="{ui:SymbolIcon ArrowImport24}" />
-                                <MenuItem Command="{Binding ExportProfileCommand}" Header="Export…" Icon="{ui:SymbolIcon ArrowExportLtr24}" />
-                                <MenuItem Command="{Binding OpenProfilesFolderCommand}" Header="Open profiles folder" Icon="{ui:SymbolIcon FolderOpen24}" />
+                                <MenuItem
+                                    Command="{Binding ImportProfileCommand}"
+                                    Header="Import…"
+                                    Icon="{ui:SymbolIcon ArrowImport24}" />
+                                <MenuItem
+                                    Command="{Binding ExportProfileCommand}"
+                                    Header="Export…"
+                                    Icon="{ui:SymbolIcon ArrowExportLtr24}" />
+                                <MenuItem
+                                    Command="{Binding OpenProfilesFolderCommand}"
+                                    Header="Open profiles folder"
+                                    Icon="{ui:SymbolIcon FolderOpen24}" />
                             </ContextMenu>
                         </ui:Button.ContextMenu>
                     </ui:Button>
@@ -290,8 +363,17 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Horizontal">
-                        <RadioButton x:Name="BindingsTab" Content="Bindings" GroupName="Pages" IsChecked="True" Style="{StaticResource PivotTab}" />
-                        <RadioButton x:Name="SettingsTab" Content="Settings" GroupName="Pages" Style="{StaticResource PivotTab}" />
+                        <RadioButton
+                            x:Name="BindingsTab"
+                            Content="Bindings"
+                            GroupName="Pages"
+                            IsChecked="True"
+                            Style="{StaticResource PivotTab}" />
+                        <RadioButton
+                            x:Name="SettingsTab"
+                            Content="Settings"
+                            GroupName="Pages"
+                            Style="{StaticResource PivotTab}" />
                     </StackPanel>
 
                     <ScrollViewer
@@ -299,126 +381,138 @@
                         Padding="0,0,14,0"
                         VerticalScrollBarVisibility="Auto"
                         Visibility="{Binding IsChecked, ElementName=BindingsTab, Converter={StaticResource BoolToVisibility}}">
-                            <ItemsControl Margin="0,0,0,8" ItemsSource="{Binding Groups}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="{x:Type vm:BindingGroupViewModel}">
-                                        <StackPanel>
-                                            <TextBlock Style="{StaticResource SectionHeader}" Text="{Binding Title}" />
-                                            <Border Padding="4" Style="{StaticResource Card}">
-                                                <ItemsControl ItemsSource="{Binding Rows}">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate DataType="{x:Type vm:BindingRowViewModel}">
-                                                            <Border
-                                                                x:Name="RowBorder"
-                                                                MinHeight="46"
-                                                                Padding="12,6,8,6"
-                                                                Background="Transparent"
-                                                                BorderBrush="Transparent"
-                                                                BorderThickness="1"
-                                                                CornerRadius="5"
-                                                                MouseEnter="Row_MouseEnter"
-                                                                MouseLeave="Row_MouseLeave">
-                                                                <Grid>
-                                                                    <Grid.ColumnDefinitions>
-                                                                        <ColumnDefinition Width="3" />
-                                                                        <ColumnDefinition Width="12" />
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="Auto" />
-                                                                    </Grid.ColumnDefinitions>
-                                                                    <Border
-                                                                        Height="18"
-                                                                        Background="{DynamicResource AccentFillColorDefaultBrush}"
-                                                                        CornerRadius="1.5"
-                                                                        Visibility="{Binding IsActive, Converter={StaticResource BoolToVisibility}}" />
-                                                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Orientation="Horizontal">
-                                                                        <TextBlock FontSize="14" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Text="{Binding Name}" />
-                                                                        <TextBlock
-                                                                            Margin="8,0,0,0"
-                                                                            VerticalAlignment="Center"
-                                                                            Style="{StaticResource Caption}"
-                                                                            Text="{Binding Hint}"
-                                                                            Visibility="{Binding Hint, Converter={StaticResource NullToCollapsed}}" />
-                                                                    </StackPanel>
-                                                                    <StackPanel Grid.Column="3" VerticalAlignment="Center" Orientation="Horizontal">
-                                                                        <TextBlock
-                                                                            Margin="0,0,4,0"
-                                                                            VerticalAlignment="Center"
-                                                                            FontSize="13"
-                                                                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                                                                            Text="Not set"
-                                                                            Visibility="{Binding HasKeys, Converter={StaticResource InverseBoolToVisibility}}" />
-                                                                        <ItemsControl ItemsSource="{Binding Keys}">
-                                                                            <ItemsControl.ItemsPanel>
-                                                                                <ItemsPanelTemplate>
-                                                                                    <StackPanel Orientation="Horizontal" />
-                                                                                </ItemsPanelTemplate>
-                                                                            </ItemsControl.ItemsPanel>
-                                                                            <ItemsControl.ItemTemplate>
-                                                                                <DataTemplate DataType="{x:Type vm:KeyChip}">
-                                                                                    <Border
-                                                                                        Margin="6,0,0,0"
-                                                                                        Padding="10,3,3,3"
-                                                                                        Background="{DynamicResource ControlFillColorDefaultBrush}"
-                                                                                        BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
-                                                                                        BorderThickness="1,1,1,2"
-                                                                                        CornerRadius="5">
-                                                                                        <StackPanel Orientation="Horizontal">
-                                                                                            <TextBlock
-                                                                                                MinWidth="12"
-                                                                                                VerticalAlignment="Center"
-                                                                                                FontSize="13"
-                                                                                                FontWeight="SemiBold"
-                                                                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                                                                Text="{Binding Label}" />
-                                                                                            <ui:Button
-                                                                                                Width="22"
-                                                                                                Height="22"
-                                                                                                Margin="6,0,0,0"
-                                                                                                Padding="0"
-                                                                                                Appearance="Transparent"
-                                                                                                AutomationProperties.Name="Remove key"
-                                                                                                BorderThickness="0"
-                                                                                                Command="{Binding DataContext.RemoveKeyCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                                                                CommandParameter="{Binding}"
-                                                                                                ToolTip="Remove">
-                                                                                                <ui:SymbolIcon FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Symbol="Dismiss12" />
-                                                                                            </ui:Button>
-                                                                                        </StackPanel>
-                                                                                    </Border>
-                                                                                </DataTemplate>
-                                                                            </ItemsControl.ItemTemplate>
-                                                                        </ItemsControl>
-                                                                        <ui:Button
-                                                                            Width="32"
-                                                                            Height="32"
-                                                                            Margin="6,0,0,0"
-                                                                            Padding="0"
-                                                                            Appearance="Transparent"
-                                                                            AutomationProperties.Name="Add key"
-                                                                            BorderThickness="0"
-                                                                            Command="{Binding AddKeyCommand}"
-                                                                            ToolTip="Add a key">
-                                                                            <ui:SymbolIcon FontSize="16" Symbol="Add24" />
-                                                                        </ui:Button>
-                                                                    </StackPanel>
-                                                                </Grid>
-                                                            </Border>
-                                                            <DataTemplate.Triggers>
-                                                                <Trigger SourceName="RowBorder" Property="IsMouseOver" Value="True">
-                                                                    <Setter TargetName="RowBorder" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
-                                                                </Trigger>
-                                                                <DataTrigger Binding="{Binding IsCapturing}" Value="True">
-                                                                    <Setter TargetName="RowBorder" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
-                                                                </DataTrigger>
-                                                            </DataTemplate.Triggers>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                            </Border>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                        <ItemsControl Margin="0,0,0,8" ItemsSource="{Binding Groups}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type vm:BindingGroupViewModel}">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionHeader}" Text="{Binding Title}" />
+                                        <Border Padding="4" Style="{StaticResource Card}">
+                                            <ItemsControl ItemsSource="{Binding Rows}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate DataType="{x:Type vm:BindingRowViewModel}">
+                                                        <Border
+                                                            x:Name="RowBorder"
+                                                            MinHeight="46"
+                                                            Padding="12,6,8,6"
+                                                            Background="Transparent"
+                                                            BorderBrush="Transparent"
+                                                            BorderThickness="1"
+                                                            CornerRadius="5"
+                                                            MouseEnter="Row_MouseEnter"
+                                                            MouseLeave="Row_MouseLeave">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="3" />
+                                                                    <ColumnDefinition Width="12" />
+                                                                    <ColumnDefinition Width="*" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <Border
+                                                                    Height="18"
+                                                                    Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                                                    CornerRadius="1.5"
+                                                                    Visibility="{Binding IsActive, Converter={StaticResource BoolToVisibility}}" />
+                                                                <StackPanel
+                                                                    Grid.Column="2"
+                                                                    VerticalAlignment="Center"
+                                                                    Orientation="Horizontal">
+                                                                    <TextBlock
+                                                                        FontSize="14"
+                                                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                                        Text="{Binding Name}" />
+                                                                    <TextBlock
+                                                                        Margin="8,0,0,0"
+                                                                        VerticalAlignment="Center"
+                                                                        Style="{StaticResource Caption}"
+                                                                        Text="{Binding Hint}"
+                                                                        Visibility="{Binding Hint, Converter={StaticResource NullToCollapsed}}" />
+                                                                </StackPanel>
+                                                                <StackPanel
+                                                                    Grid.Column="3"
+                                                                    VerticalAlignment="Center"
+                                                                    Orientation="Horizontal">
+                                                                    <TextBlock
+                                                                        Margin="0,0,4,0"
+                                                                        VerticalAlignment="Center"
+                                                                        FontSize="13"
+                                                                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                                                        Text="Not set"
+                                                                        Visibility="{Binding HasKeys, Converter={StaticResource InverseBoolToVisibility}}" />
+                                                                    <ItemsControl ItemsSource="{Binding Keys}">
+                                                                        <ItemsControl.ItemsPanel>
+                                                                            <ItemsPanelTemplate>
+                                                                                <StackPanel Orientation="Horizontal" />
+                                                                            </ItemsPanelTemplate>
+                                                                        </ItemsControl.ItemsPanel>
+                                                                        <ItemsControl.ItemTemplate>
+                                                                            <DataTemplate DataType="{x:Type vm:KeyChip}">
+                                                                                <Border
+                                                                                    Margin="6,0,0,0"
+                                                                                    Padding="10,3,3,3"
+                                                                                    Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                                                                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                                                                    BorderThickness="1,1,1,2"
+                                                                                    CornerRadius="5">
+                                                                                    <StackPanel Orientation="Horizontal">
+                                                                                        <TextBlock
+                                                                                            MinWidth="12"
+                                                                                            VerticalAlignment="Center"
+                                                                                            FontSize="13"
+                                                                                            FontWeight="SemiBold"
+                                                                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                                                            Text="{Binding Label}" />
+                                                                                        <ui:Button
+                                                                                            Width="22"
+                                                                                            Height="22"
+                                                                                            Margin="6,0,0,0"
+                                                                                            Padding="0"
+                                                                                            Appearance="Transparent"
+                                                                                            AutomationProperties.Name="Remove key"
+                                                                                            BorderThickness="0"
+                                                                                            Command="{Binding DataContext.RemoveKeyCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                                            CommandParameter="{Binding}"
+                                                                                            ToolTip="Remove">
+                                                                                            <ui:SymbolIcon
+                                                                                                FontSize="12"
+                                                                                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                                                                Symbol="Dismiss12" />
+                                                                                        </ui:Button>
+                                                                                    </StackPanel>
+                                                                                </Border>
+                                                                            </DataTemplate>
+                                                                        </ItemsControl.ItemTemplate>
+                                                                    </ItemsControl>
+                                                                    <ui:Button
+                                                                        Width="32"
+                                                                        Height="32"
+                                                                        Margin="6,0,0,0"
+                                                                        Padding="0"
+                                                                        Appearance="Transparent"
+                                                                        AutomationProperties.Name="Add key"
+                                                                        BorderThickness="0"
+                                                                        Command="{Binding AddKeyCommand}"
+                                                                        ToolTip="Add a key">
+                                                                        <ui:SymbolIcon FontSize="16" Symbol="Add24" />
+                                                                    </ui:Button>
+                                                                </StackPanel>
+                                                            </Grid>
+                                                        </Border>
+                                                        <DataTemplate.Triggers>
+                                                            <Trigger SourceName="RowBorder" Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="RowBorder" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                                            </Trigger>
+                                                            <DataTrigger Binding="{Binding IsCapturing}" Value="True">
+                                                                <Setter TargetName="RowBorder" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                                            </DataTrigger>
+                                                        </DataTemplate.Triggers>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </Border>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </ScrollViewer>
 
                     <ScrollViewer
@@ -426,116 +520,169 @@
                         Padding="0,0,14,0"
                         VerticalScrollBarVisibility="Auto"
                         Visibility="{Binding IsChecked, ElementName=SettingsTab, Converter={StaticResource BoolToVisibility}}">
-                            <StackPanel Margin="0,0,0,8">
-                                <TextBlock Style="{StaticResource SectionHeader}" Text="Emulation" />
-                                <ui:CardControl Icon="{ui:SymbolIcon Keyboard24}" Style="{StaticResource SettingCard}">
-                                    <ui:CardControl.Header>
-                                        <StackPanel>
-                                            <TextBlock Style="{StaticResource SettingTitle}" Text="On/off hotkey" />
-                                            <TextBlock Style="{StaticResource Caption}" Text="Turns emulation on and off from anywhere, even while a game has focus." />
-                                        </StackPanel>
-                                    </ui:CardControl.Header>
-                                    <ui:Button MinWidth="96" AutomationProperties.Name="Change on/off hotkey" Command="{Binding StartToggleKeyCaptureCommand}" Content="{Binding ToggleKeyLabel}" ToolTip="Change the hotkey" />
-                                </ui:CardControl>
-                                <ui:CardControl Icon="{ui:SymbolIcon Shield24}" Style="{StaticResource SettingCard}">
-                                    <ui:CardControl.Header>
-                                        <StackPanel>
-                                            <TextBlock Style="{StaticResource SettingTitle}" Text="Block mapped keys" />
-                                            <TextBlock Style="{StaticResource Caption}" Text="While emulation is on, games get only controller input from mapped keys, not the keys themselves." />
-                                        </StackPanel>
-                                    </ui:CardControl.Header>
-                                    <ui:ToggleSwitch AutomationProperties.Name="Block mapped keys" IsChecked="{Binding SuppressMappedKeys}" />
-                                </ui:CardControl>
-                                <ui:CardControl Icon="{ui:SymbolIcon Power24}" Style="{StaticResource SettingCard}">
-                                    <ui:CardControl.Header>
-                                        <StackPanel>
-                                            <TextBlock Style="{StaticResource SettingTitle}" Text="Turn on at startup" />
-                                            <TextBlock Style="{StaticResource Caption}" Text="Start emulating as soon as the app opens." />
-                                        </StackPanel>
-                                    </ui:CardControl.Header>
-                                    <ui:ToggleSwitch AutomationProperties.Name="Turn on at startup" IsChecked="{Binding EnableOnStartup}" />
-                                </ui:CardControl>
-                                <ui:CardControl Icon="{ui:SymbolIcon Speaker224}" Style="{StaticResource SettingCard}">
-                                    <ui:CardControl.Header>
-                                        <StackPanel>
-                                            <TextBlock Style="{StaticResource SettingTitle}" Text="Sound on toggle" />
-                                            <TextBlock Style="{StaticResource Caption}" Text="A high beep when emulation turns on, a low one when it turns off." />
-                                        </StackPanel>
-                                    </ui:CardControl.Header>
-                                    <ui:ToggleSwitch AutomationProperties.Name="Sound on toggle" IsChecked="{Binding ToggleBeep}" />
-                                </ui:CardControl>
-
-                                <TextBlock Style="{StaticResource SectionHeader}" Text="This profile" />
-                                <ui:CardControl Icon="{ui:SymbolIcon Games24}" Style="{StaticResource SettingCard}">
-                                    <ui:CardControl.Header>
-                                        <StackPanel>
-                                            <TextBlock Style="{StaticResource SettingTitle}" Text="Walk speed" />
-                                            <TextBlock Style="{StaticResource Caption}" Text="How far the left stick tilts while the Walk key is held." />
-                                        </StackPanel>
-                                    </ui:CardControl.Header>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Slider
-                                            Width="180"
-                                            VerticalAlignment="Center"
-                                            AutomationProperties.Name="Walk speed"
-                                            IsSnapToTickEnabled="True"
-                                            Maximum="100"
-                                            Minimum="10"
-                                            TickFrequency="5"
-                                            Value="{Binding WalkPercent, Delay=150}" />
-                                        <TextBlock
-                                            Width="44"
-                                            Margin="8,0,0,0"
-                                            VerticalAlignment="Center"
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Text="{Binding WalkPercent, StringFormat={}{0:0}%}"
-                                            TextAlignment="Right" />
+                        <StackPanel Margin="0,0,0,8">
+                            <TextBlock Style="{StaticResource SectionHeader}" Text="Emulation" />
+                            <ui:CardControl Icon="{ui:SymbolIcon Keyboard24}" Style="{StaticResource SettingCard}">
+                                <ui:CardControl.Header>
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SettingTitle}" Text="On/off hotkey" />
+                                        <TextBlock Style="{StaticResource Caption}" Text="Turns emulation on and off from anywhere, even while a game has focus." />
                                     </StackPanel>
-                                </ui:CardControl>
-
-                                <TextBlock Style="{StaticResource SectionHeader}" Text="Window" />
-                                <ui:CardControl Icon="{ui:SymbolIcon Open24}" Style="{StaticResource SettingCard}">
-                                    <ui:CardControl.Header>
-                                        <StackPanel>
-                                            <TextBlock Style="{StaticResource SettingTitle}" Text="Keep running when closed" />
-                                            <TextBlock Style="{StaticResource Caption}" Text="Closing the window keeps the app in the notification area. Exit from the tray icon." />
-                                        </StackPanel>
-                                    </ui:CardControl.Header>
-                                    <ui:ToggleSwitch AutomationProperties.Name="Keep running when closed" IsChecked="{Binding CloseToTray}" />
-                                </ui:CardControl>
-                                <ui:CardControl Icon="{ui:SymbolIcon ArrowMinimize24}" Style="{StaticResource SettingCard}">
-                                    <ui:CardControl.Header>
-                                        <StackPanel>
-                                            <TextBlock Style="{StaticResource SettingTitle}" Text="Start in the tray" />
-                                            <TextBlock Style="{StaticResource Caption}" Text="Open without showing the window." />
-                                        </StackPanel>
-                                    </ui:CardControl.Header>
-                                    <ui:ToggleSwitch AutomationProperties.Name="Start in the tray" IsChecked="{Binding StartMinimized}" />
-                                </ui:CardControl>
-
-                                <TextBlock Style="{StaticResource SectionHeader}" Text="About" />
-                                <ui:CardControl Icon="{ui:SymbolIcon XboxController24}" Style="{StaticResource SettingCard}">
-                                    <ui:CardControl.Header>
-                                        <StackPanel>
-                                            <TextBlock Style="{StaticResource SettingTitle}" Text="ViGEmBus driver" />
-                                            <TextBlock Style="{StaticResource Caption}" Text="{Binding DriverText}" />
-                                        </StackPanel>
-                                    </ui:CardControl.Header>
-                                    <ui:Button Command="{Binding OpenDriverPageCommand}" Content="Driver download page" />
-                                </ui:CardControl>
-                                <ui:CardControl Icon="{ui:SymbolIcon Info24}" Style="{StaticResource SettingCard}">
-                                    <ui:CardControl.Header>
-                                        <StackPanel>
-                                            <TextBlock Style="{StaticResource SettingTitle}" Text="Keyvert" />
-                                            <TextBlock Style="{StaticResource Caption}" Text="{Binding Version, StringFormat=Version {0}}" />
-                                        </StackPanel>
-                                    </ui:CardControl.Header>
-                                    <StackPanel Orientation="Horizontal">
-                                        <ui:Button Command="{Binding OpenProfilesFolderCommand}" Content="Profiles folder" />
-                                        <ui:Button Margin="8,0,0,0" Command="{Binding OpenLogFolderCommand}" Content="Log folder" />
+                                </ui:CardControl.Header>
+                                <ui:Button
+                                    MinWidth="96"
+                                    AutomationProperties.Name="Change on/off hotkey"
+                                    Command="{Binding StartToggleKeyCaptureCommand}"
+                                    Content="{Binding ToggleKeyLabel}"
+                                    ToolTip="Change the hotkey" />
+                            </ui:CardControl>
+                            <ui:CardControl Icon="{ui:SymbolIcon Shield24}" Style="{StaticResource SettingCard}">
+                                <ui:CardControl.Header>
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SettingTitle}" Text="Block mapped keys" />
+                                        <TextBlock Style="{StaticResource Caption}" Text="While emulation is on, games get only controller input from mapped keys, not the keys themselves." />
                                     </StackPanel>
-                                </ui:CardControl>
-                            </StackPanel>
+                                </ui:CardControl.Header>
+                                <ui:ToggleSwitch AutomationProperties.Name="Block mapped keys" IsChecked="{Binding SuppressMappedKeys}" />
+                            </ui:CardControl>
+                            <ui:CardControl Icon="{ui:SymbolIcon Power24}" Style="{StaticResource SettingCard}">
+                                <ui:CardControl.Header>
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SettingTitle}" Text="Turn on at startup" />
+                                        <TextBlock Style="{StaticResource Caption}" Text="Start emulating as soon as the app opens." />
+                                    </StackPanel>
+                                </ui:CardControl.Header>
+                                <ui:ToggleSwitch AutomationProperties.Name="Turn on at startup" IsChecked="{Binding EnableOnStartup}" />
+                            </ui:CardControl>
+                            <ui:CardControl Icon="{ui:SymbolIcon Speaker224}" Style="{StaticResource SettingCard}">
+                                <ui:CardControl.Header>
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SettingTitle}" Text="Sound on toggle" />
+                                        <TextBlock Style="{StaticResource Caption}" Text="A high beep when emulation turns on, a low one when it turns off." />
+                                    </StackPanel>
+                                </ui:CardControl.Header>
+                                <ui:ToggleSwitch AutomationProperties.Name="Sound on toggle" IsChecked="{Binding ToggleBeep}" />
+                            </ui:CardControl>
+
+                            <TextBlock Style="{StaticResource SectionHeader}" Text="This profile" />
+                            <ui:CardControl Icon="{ui:SymbolIcon Games24}" Style="{StaticResource SettingCard}">
+                                <ui:CardControl.Header>
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SettingTitle}" Text="Walk speed" />
+                                        <TextBlock Style="{StaticResource Caption}" Text="How far the left stick tilts while the Walk key is held." />
+                                    </StackPanel>
+                                </ui:CardControl.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Slider
+                                        Width="180"
+                                        VerticalAlignment="Center"
+                                        AutomationProperties.Name="Walk speed"
+                                        IsSnapToTickEnabled="True"
+                                        Maximum="100"
+                                        Minimum="10"
+                                        TickFrequency="5"
+                                        Value="{Binding WalkPercent, Delay=150}" />
+                                    <TextBlock
+                                        Width="44"
+                                        Margin="8,0,0,0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        Text="{Binding WalkPercent, StringFormat={}{0:0}%}"
+                                        TextAlignment="Right" />
+                                </StackPanel>
+                            </ui:CardControl>
+                            <ui:CardControl Icon="{ui:SymbolIcon Timer24}" Style="{StaticResource SettingCard}">
+                                <ui:CardControl.Header>
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SettingTitle}" Text="Smoothing Duration" />
+                                        <TextBlock Style="{StaticResource Caption}" Text="Set how quickly stick and trigger inputs transition." />
+                                    </StackPanel>
+                                </ui:CardControl.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Slider
+                                        Width="180"
+                                        VerticalAlignment="Center"
+                                        AutomationProperties.Name="Smoothing Duration"
+                                        IsSnapToTickEnabled="True"
+                                        Maximum="1.0"
+                                        Minimum="0.0"
+                                        TickFrequency="0.05"
+                                        Value="{Binding SmoothTime}" />
+                                    <TextBlock
+                                        Width="44"
+                                        Margin="8,0,0,0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        Text="{Binding SmoothTime, Converter={StaticResource Multiply}, ConverterParameter=100, StringFormat={}{0:F0}ms}"
+                                        TextAlignment="Right" />
+                                </StackPanel>
+                            </ui:CardControl>
+                            <ui:CardControl Icon="{ui:SymbolIcon Joystick20}" Style="{StaticResource SettingCard}">
+                                <ui:CardControl.Header>
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SettingTitle}" Text="Input Smoothing" />
+                                        <TextBlock Style="{StaticResource Caption}" Text="Choose which controller inputs apply transition smoothing." />
+                                    </StackPanel>
+                                </ui:CardControl.Header>
+                                <ComboBox
+                                    Width="160"
+                                    VerticalAlignment="Center"
+                                    AutomationProperties.Name="Interpolated inputs"
+                                    SelectedIndex="{Binding SmoothInput, Mode=TwoWay}">
+                                    <ComboBoxItem Content="Disabled" />
+                                    <ComboBoxItem Content="Sticks only" />
+                                    <ComboBoxItem Content="Triggers only" />
+                                    <ComboBoxItem Content="Sticks &amp; Triggers" />
+                                </ComboBox>
+                            </ui:CardControl>
+
+
+                            <TextBlock Style="{StaticResource SectionHeader}" Text="Window" />
+                            <ui:CardControl Icon="{ui:SymbolIcon Open24}" Style="{StaticResource SettingCard}">
+                                <ui:CardControl.Header>
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SettingTitle}" Text="Keep running when closed" />
+                                        <TextBlock Style="{StaticResource Caption}" Text="Closing the window keeps the app in the notification area. Exit from the tray icon." />
+                                    </StackPanel>
+                                </ui:CardControl.Header>
+                                <ui:ToggleSwitch AutomationProperties.Name="Keep running when closed" IsChecked="{Binding CloseToTray}" />
+                            </ui:CardControl>
+                            <ui:CardControl Icon="{ui:SymbolIcon ArrowMinimize24}" Style="{StaticResource SettingCard}">
+                                <ui:CardControl.Header>
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SettingTitle}" Text="Start in the tray" />
+                                        <TextBlock Style="{StaticResource Caption}" Text="Open without showing the window." />
+                                    </StackPanel>
+                                </ui:CardControl.Header>
+                                <ui:ToggleSwitch AutomationProperties.Name="Start in the tray" IsChecked="{Binding StartMinimized}" />
+                            </ui:CardControl>
+
+                            <TextBlock Style="{StaticResource SectionHeader}" Text="About" />
+                            <ui:CardControl Icon="{ui:SymbolIcon XboxController24}" Style="{StaticResource SettingCard}">
+                                <ui:CardControl.Header>
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SettingTitle}" Text="ViGEmBus driver" />
+                                        <TextBlock Style="{StaticResource Caption}" Text="{Binding DriverText}" />
+                                    </StackPanel>
+                                </ui:CardControl.Header>
+                                <ui:Button Command="{Binding OpenDriverPageCommand}" Content="Driver download page" />
+                            </ui:CardControl>
+                            <ui:CardControl Icon="{ui:SymbolIcon Info24}" Style="{StaticResource SettingCard}">
+                                <ui:CardControl.Header>
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SettingTitle}" Text="Keyvert" />
+                                        <TextBlock Style="{StaticResource Caption}" Text="{Binding Version, StringFormat=Version {0}}" />
+                                    </StackPanel>
+                                </ui:CardControl.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:Button Command="{Binding OpenProfilesFolderCommand}" Content="Profiles folder" />
+                                    <ui:Button
+                                        Margin="8,0,0,0"
+                                        Command="{Binding OpenLogFolderCommand}"
+                                        Content="Log folder" />
+                                </StackPanel>
+                            </ui:CardControl>
+                        </StackPanel>
                     </ScrollViewer>
                 </Grid>
             </Grid>
@@ -558,7 +705,11 @@
                 BorderThickness="1"
                 CornerRadius="8">
                 <StackPanel HorizontalAlignment="Center">
-                    <ui:SymbolIcon HorizontalAlignment="Center" FontSize="40" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Symbol="Keyboard24" />
+                    <ui:SymbolIcon
+                        HorizontalAlignment="Center"
+                        FontSize="40"
+                        Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                        Symbol="Keyboard24" />
                     <TextBlock
                         Margin="0,14,0,0"
                         HorizontalAlignment="Center"
@@ -685,10 +836,16 @@
             IsHitTestVisible="False"
             Visibility="{Binding IsToastVisible, Converter={StaticResource BoolToVisibility}}">
             <Border.Effect>
-                <DropShadowEffect BlurRadius="24" Opacity="0.28" ShadowDepth="4" />
+                <DropShadowEffect
+                    BlurRadius="24"
+                    Opacity="0.28"
+                    ShadowDepth="4" />
             </Border.Effect>
             <StackPanel Orientation="Horizontal">
-                <ui:SymbolIcon FontSize="18" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Symbol="Info24" />
+                <ui:SymbolIcon
+                    FontSize="18"
+                    Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                    Symbol="Info24" />
                 <TextBlock
                     Margin="10,0,0,0"
                     VerticalAlignment="Center"

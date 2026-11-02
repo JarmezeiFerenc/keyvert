@@ -10,6 +10,8 @@ public sealed class MappingProfile
     public bool StartEnabled { get; init; }
     public bool SuppressMappedKeys { get; init; } = true;
     public double WalkScale { get; init; } = 0.5;
+    public float SmoothTime { get; set; } = 0.5f;
+    public int SmoothInput { get; set; } = 0;
     public required IReadOnlyDictionary<int, ControllerAction> Bindings { get; init; }
 }
 
@@ -20,9 +22,11 @@ public sealed class ProfileData
     public const double MaxWalkScale = 1.0;
 
     public double WalkScale { get; set; } = 0.5;
+    public float SmoothTime { get; set; } = 0.5f;
+    public int SmoothInput { get; set; } = 0;
     public Dictionary<int, ControllerAction> Bindings { get; init; } = [];
 
-    public ProfileData Clone() => new() { WalkScale = WalkScale, Bindings = new(Bindings) };
+    public ProfileData Clone() => new() { WalkScale = WalkScale, SmoothTime = SmoothTime, SmoothInput = SmoothInput, Bindings = new(Bindings) };
 }
 
 public sealed class ConfigException(IReadOnlyList<string> errors)
@@ -62,6 +66,9 @@ public static class ProfileSerializer
         if (double.IsNaN(walkScale) || walkScale < ProfileData.MinWalkScale || walkScale > ProfileData.MaxWalkScale)
             errors.Add("walkScale must be between 0.1 and 1.0.");
 
+        float smoothTime = file.SmoothTime ?? 0.5f;
+        int SmoothInput = file.SmoothInput ?? 0;
+
         var bindings = new Dictionary<int, ControllerAction>();
         var keyNameByCode = new Dictionary<int, string>();
         foreach (var (keyName, actionName) in file.Bindings ?? [])
@@ -91,7 +98,7 @@ public static class ProfileSerializer
         if (errors.Count > 0)
             throw new ConfigException(errors);
 
-        return new ProfileData { WalkScale = walkScale, Bindings = bindings };
+        return new ProfileData { WalkScale = walkScale, SmoothTime = smoothTime, SmoothInput = SmoothInput, Bindings = bindings };
     }
 
     public static string Serialize(ProfileData profile)
@@ -101,6 +108,8 @@ public static class ProfileSerializer
         {
             writer.WriteStartObject();
             writer.WriteNumber("walkScale", Math.Round(profile.WalkScale, 2));
+            writer.WriteNumber("smoothTime", Math.Round(profile.SmoothTime, 2));
+            writer.WriteNumber("smoothInput", profile.SmoothInput);
             writer.WriteStartObject("bindings");
             foreach (var (vk, action) in profile.Bindings.OrderBy(b => b.Value).ThenBy(b => b.Key))
                 writer.WriteString(KeyNames.Describe(vk), action.ToString());
@@ -113,6 +122,8 @@ public static class ProfileSerializer
     private sealed class ProfileFile
     {
         public double? WalkScale { get; set; }
+        public float? SmoothTime { get; set; }
+        public int? SmoothInput { get; set; }
         public Dictionary<string, string?>? Bindings { get; set; }
     }
 }
