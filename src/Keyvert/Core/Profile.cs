@@ -109,7 +109,7 @@ public static class ProfileSerializer
             writer.WriteStartObject();
             writer.WriteNumber("walkScale", Math.Round(profile.WalkScale, 2));
             writer.WriteNumber("smoothTime", Math.Round(profile.SmoothTime, 2));
-            writer.WriteNumber("smoothingInput", profile.SmoothInput);
+            writer.WriteNumber("smoothInput", profile.SmoothInput);
             writer.WriteStartObject("bindings");
             foreach (var (vk, action) in profile.Bindings.OrderBy(b => b.Value).ThenBy(b => b.Key))
                 writer.WriteString(KeyNames.Describe(vk), action.ToString());
