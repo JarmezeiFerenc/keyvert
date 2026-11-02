@@ -21,3 +21,22 @@ public sealed class NullToCollapsedConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
         throw new NotSupportedException();
 }
+
+public sealed class MultiplyConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is IConvertible && !(value is string) && !(value is bool))
+        {
+            double val = System.Convert.ToDouble(value, culture);
+            double param = System.Convert.ToDouble(parameter, culture);
+            return val * param;
+        }
+        return value;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
